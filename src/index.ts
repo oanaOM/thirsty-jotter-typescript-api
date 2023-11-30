@@ -4,7 +4,7 @@
 
 import * as dotenv from "dotenv";
 import { app } from "./app";
-// import { server } from "../mocks/node";
+// import { server } from "../test/mocks/node";
 
 /**
  * App Variables

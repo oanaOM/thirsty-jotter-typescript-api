@@ -24,6 +24,14 @@ const tables = [
       { name: "labels", type: "string" },
     ],
   },
+  {
+    name: "users",
+    columns: [
+      { name: "hash", type: "string" },
+      { name: "salt", type: "string" },
+      { name: "email", type: "string", unique: true },
+    ],
+  },
 ] as const;
 
 export type SchemaTables = typeof tables;
@@ -32,8 +40,12 @@ export type InferredTypes = SchemaInference<SchemaTables>;
 export type Plants = InferredTypes["plants"];
 export type PlantsRecord = Plants & XataRecord;
 
+export type Users = InferredTypes["users"];
+export type UsersRecord = Users & XataRecord;
+
 export type DatabaseSchema = {
   plants: PlantsRecord;
+  users: UsersRecord;
 };
 
 const DatabaseClient = buildClient();

@@ -3,10 +3,16 @@
  */
 
 import express, { Response, Request } from "express";
-import { BasePlant } from "../models/plants";
-import { getXataClient } from "../xata";
+import { Plants, getXataClient } from "../xata";
+import * as dotenv from "dotenv";
+import { authMiddleware } from "../middleware/authorization";
+
+dotenv.config();
 
 export const plantsRouter = express.Router();
+
+// Middleware
+plantsRouter.use(authMiddleware);
 
 /**
  * Controller Definitions
@@ -14,11 +20,18 @@ export const plantsRouter = express.Router();
 
 // GET plants
 plantsRouter.get("/plants", async (req: Request, res: Response) => {
+  const page = Number(req.query.page) || 1;
+  const size = Number(req.query.size) || 5;
+  const offset = size * page - size;
+
   try {
-    // const plants: Plant[] = await PlantService.findAll();
-    const plants = await getXataClient().db.plants.getPaginated();
-    res.status(200).json(plants.records);
+    const plants = await getXataClient().db.plants.getPaginated({
+      pagination: { size, offset },
+    });
+
+    res.status(200).json(plants);
   } catch (e) {
+    console.log("--e: ", e);
     res.status(500).send(e);
   }
 });
@@ -30,7 +43,7 @@ plantsRouter.get("/plants/:id", async (req: Request, res: Response) => {
     // const plant = await PlantService.findByID(id);
     const plant = await getXataClient().db.plants.read(id);
 
-    if (plant) {
+    if (plant != null) {
       res.status(200).json(plant);
     } else {
       res.status(404).send("Plant not found");
@@ -43,17 +56,17 @@ plantsRouter.get("/plants/:id", async (req: Request, res: Response) => {
 // POST plants
 plantsRouter.post("/plants", async (req: Request, res: Response) => {
   try {
-    const newPlant: BasePlant = req.body;
+    const newPlant: Plants = req.body;
 
     if (Object.keys(newPlant).length === 0) {
       return res.status(204).send("Payload is empty.");
     }
 
-    // const plant = await PlantService.create(newPlant);
     const plant = await getXataClient().db.plants.create(newPlant);
 
     res.status(201).json(plant);
   } catch (e) {
+    console.log("-e", e);
     res.status(500).send(e);
   }
 });
@@ -62,7 +75,7 @@ plantsRouter.post("/plants", async (req: Request, res: Response) => {
 plantsRouter.put("/plants/:id", async (req: Request, res: Response) => {
   const id = req.params.id;
   try {
-    const plantUpdate: BasePlant = req.body;
+    const plantUpdate: Plants = req.body;
     if (!plantUpdate) {
       res.status(404).send("Payload is empty.");
     }
@@ -78,7 +91,7 @@ plantsRouter.put("/plants/:id", async (req: Request, res: Response) => {
     // } else {
     // res.status(404).send("Plant doesn't exist.");
     // }
-    //   TODO: create the plant if doesn't exist
+    // TODO: create the plant if doesn't exist
   } catch (e) {
     res.status(500).send(e);
   }
