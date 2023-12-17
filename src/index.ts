@@ -11,11 +11,7 @@ import { app } from "./app";
  */
 
 dotenv.config();
-const PORT: number = parseInt(process.env.PORT as string, 10);
-
-if (!process.env.PORT) {
-  process.exit(1);
-}
+const PORT: number = parseInt(process.env.PORT as string, 10) || 4000;
 
 /**
  * Server Activation

@@ -1,13 +1,23 @@
-# Implementation steps
+# Thirsty Jotter API
 
-1. Initialise a node.js project with TS
+This is Restful API that serves the Thirsty Jotter app. 
+
 
 ## Project dependencies
 
 - express: Fast, un-opinionated, minimalist web framework for Node.js.
+- typescript
+- xata.io SDK
 - dotenv: Zero-dependency module that loads environment variables from a .env file into process.env.
 - cors: Express middleware to enable CORS with various options.
 - helmet: Express middleware to secure your apps by setting various HTTP headers, which mitigate common attack vectors.
+
+## Environmental variables
+
+- PORT - the port on which the server should start. If not specified, it will default to port no. 4000
+- XATA_API_KEY
+- XATA_BRANCH
+
 
 ### Endpoints
 
@@ -18,6 +28,15 @@
 - `POST /api/plants/:id` - create a plant using the id of the plant
 - `PUT /api/plants/:id` - update a plant using the id of the plant
 - `DELETE /api/plants/:id` - remove a plant using the id of the plant
+
+### Deploying
+
+To build docker image:
+
+```shell
+docker build -t thirsty-jotter-typescript-api .
+```
+
 
 ### Testing
 
