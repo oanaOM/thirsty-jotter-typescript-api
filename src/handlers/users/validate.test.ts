@@ -1,7 +1,20 @@
+/**
+ * GET /api/users
+ * payload:{
+ *  email: "bla@gmail.com"
+ * }
+ * 
+ * TODO: 
+ * - validate that email is an email
+ */
+
+
+
 import request from "supertest";
 import { app } from "../../app";
 import {
   MOCK_EXISTING_USER,
+  MOCK_USER,
   MOCK_USER_CREDENTIALS,
 } from "../../../test/mocks/fixtures/users";
 
@@ -21,7 +34,6 @@ vi.mock("../../xata", async (importOriginal) => {
                 getFirst,
               };
             },
-            create,
           },
         },
       };
@@ -29,37 +41,20 @@ vi.mock("../../xata", async (importOriginal) => {
   };
 });
 
-describe("POST /login", () => {
+describe("POST /users", () => {
   describe("validates the params", () => {
     describe("should return 400", () => {
       afterEach(() => {
         vi.clearAllMocks();
       });
-      it("when both params are missing", async () => {
-        const response = await request(app).post("/api/login").send({});
+      it("when payload is missing", async () => {
+        const response = await request(app).post("/api/users").send({});
         expect(response.statusCode).toBe(400);
         expect(response.body.error.message).toBe(
-          "Invalid params. Please specify your email and password"
+          "Invalid params. Please specify your email"
         );
       });
-      it("when one of the param is misspelled", async () => {
-        const response = await request(app)
-          .post("/api/login")
-          .send({ pass: "123" });
-        expect(response.statusCode).toBe(400);
-        expect(response.body.error.message).toBe(
-          "Invalid params. Please specify your email and password"
-        );
-      });
-      it("when one of the param is missing", async () => {
-        const response = await request(app)
-          .post("/api/login")
-          .send({ password: "123" });
-        expect(response.statusCode).toBe(400);
-        expect(response.body.error.message).toBe(
-          "Invalid params. Please specify your email and password"
-        );
-      });
+      
     });
   });
 
@@ -70,26 +65,17 @@ describe("POST /login", () => {
     it("and it has a valid hash, then return the user object", async () => {
       getFirst.mockResolvedValue(MOCK_EXISTING_USER);
       const response = await request(app)
-        .post("/api/login")
+        .post("/api/users")
         .set("Accept", "application/json")
-        .send(MOCK_USER_CREDENTIALS);
+        .send(MOCK_USER);
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toEqual({
-        message: "Welcome back user",
+       user:{
         email: MOCK_EXISTING_USER.email,
+        id: MOCK_EXISTING_USER.id,
+       }
       });
-    });
-    it("and it has an invalid hash, return 402", async () => {
-      getFirst.mockResolvedValue({
-        ...MOCK_EXISTING_USER,
-        hash: "too_small",
-      });
-      const response = await request(app)
-        .post("/api/login")
-        .send(MOCK_USER_CREDENTIALS);
-      expect(response.statusCode).toBe(402);
-      expect(response.body.error.message).toContain("User has invalid hash");
     });
   });
 
@@ -97,18 +83,16 @@ describe("POST /login", () => {
     afterEach(() => {
       vi.clearAllMocks();
     });
-
     it("should return 404", async () => {
       getFirst.mockResolvedValue(null);
       const response = await request(app)
-        .post("/api/login")
+        .post("/api/users")
         .set("Accept", "application/json")
-        .send(MOCK_USER_CREDENTIALS);
+        .send(MOCK_USER);
 
       expect(response.statusCode).toBe(404);
       expect(response.body.error.message).toBe("User not found");
-    });  
-
+    });     
     // it("should return 500 for any other error", () => {});
   });
 });

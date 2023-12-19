@@ -5,6 +5,10 @@ export const MOCK_USER_CREDENTIALS = {
   email: "goofy@him.io",
 };
 
+export const MOCK_USER = {
+  email: "goofy@him.io",
+};
+
 export const MOCK_EXISTING_USER = {
   email: "goofy@him.io",
   hash: MOCK_HASH,

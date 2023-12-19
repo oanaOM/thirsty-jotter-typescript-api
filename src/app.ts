@@ -1,10 +1,11 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
-import { plantsRouter } from "./handlers/plants";
+import { plantsRouter } from "./handlers/plants/plants";
 import { errorHandler } from "./middleware/error";
 import { notFoundHandler } from "./middleware/not-found";
 import { authRouter } from "./handlers/authentication/login";
+import { userRouter } from "./handlers/users/validate";
 
 export const app = express();
 
@@ -17,6 +18,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/api", authRouter);
 app.use("/api", plantsRouter);
+app.use("/api", userRouter);
 
 // middlewares order in which they are declared and invoked is crucial for the architecture of the app.
 app.use(errorHandler);
