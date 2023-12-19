@@ -8,6 +8,7 @@ export const authMiddleware = async (
   next: NextFunction
   /* eslint-enable @typescript-eslint/no-unused-vars */
 ) => {
+ 
   if (!request.headers["authorization"]) {
     response.status(403).send({
       error: "Forbidden. Missing token from the 'authorization' header",

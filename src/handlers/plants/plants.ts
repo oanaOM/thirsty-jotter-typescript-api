@@ -3,16 +3,17 @@
  */
 
 import express, { Response, Request } from "express";
-import { Plants, getXataClient } from "../xata";
+import { Plants, getXataClient } from "../../xata";
 import * as dotenv from "dotenv";
-import { authMiddleware } from "../middleware/authorization";
+import { authMiddleware } from "../../middleware/authorization";
 
 dotenv.config();
 
 export const plantsRouter = express.Router();
 
+
 // Middleware
-plantsRouter.use(authMiddleware);
+plantsRouter.use("/plants",authMiddleware);
 
 /**
  * Controller Definitions
@@ -31,8 +32,10 @@ plantsRouter.get("/plants", async (req: Request, res: Response) => {
 
     res.status(200).json(plants);
   } catch (e) {
-    console.log("--e: ", e);
-    res.status(500).send(e);
+    res.status(500).json({
+      message: "Something went wrong",
+      error: e
+    });
   }
 });
 
@@ -46,10 +49,17 @@ plantsRouter.get("/plants/:id", async (req: Request, res: Response) => {
     if (plant != null) {
       res.status(200).json(plant);
     } else {
-      res.status(404).send("Plant not found");
+      res.status(404).json({
+        error: {
+          message: "Plant not found",
+        }
+      });
     }
   } catch (e) {
-    res.status(500).send(e);
+    res.status(500).json({
+      message: "Something went wrong",
+      error: e
+    });
   }
 });
 
@@ -66,8 +76,10 @@ plantsRouter.post("/plants", async (req: Request, res: Response) => {
 
     res.status(201).json(plant);
   } catch (e) {
-    console.log("-e", e);
-    res.status(500).send(e);
+    res.status(500).json({
+      message: "Something went wrong",
+      error: e
+    });
   }
 });
 
@@ -93,7 +105,10 @@ plantsRouter.put("/plants/:id", async (req: Request, res: Response) => {
     // }
     // TODO: create the plant if doesn't exist
   } catch (e) {
-    res.status(500).send(e);
+    res.status(500).json({
+      message: "Something went wrong",
+      error: e
+    });
   }
 });
 
@@ -106,6 +121,9 @@ plantsRouter.delete("/plants/:id", async (req: Request, res: Response) => {
     // TODO: we want to return a user friendly message back
     res.sendStatus(204);
   } catch (e) {
-    res.status(500).send(e);
+    res.status(500).json({
+      message: "Something went wrong",
+      error: e
+    });
   }
 });

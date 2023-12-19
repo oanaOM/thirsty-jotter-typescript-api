@@ -23,6 +23,8 @@ This is Restful API that serves the Thirsty Jotter app.
 
 - `POST /api/login` - authenticates a user. Read more about the authentication mechanism used [here](./src/handlers/authentication/README.md)
 
+- `POST /api/user/create` - authenticates a user. Read more about the authentication mechanism used [here](./src/handlers/authentication/README.md)
+
 - `GET /api/plants` - retrieve all plants
 - `GET /api/plants/:id` - retrieve a plant by the id
 - `POST /api/plants/:id` - create a plant using the id of the plant
@@ -44,8 +46,17 @@ docker build -t thirsty-jotter-typescript-api .
 
 ```bash
 curl -i -H "Content-Type:application/json" \
--X POST "http://localhost:7000/api/login" \
+-X POST "http://localhost:8080/api/login" \
 -d '{"pass": "123", "user": "goofy"}'
+```
+
+
+- user
+
+```bash
+curl -i -H "Content-Type:application/json" \
+-X POST "http://localhost:8080/api/users" \
+-d '{"pass": "123"}'
 ```
 
 ### Resources
@@ -58,3 +69,4 @@ curl -i -H "Content-Type:application/json" \
 TODO
 
 - [] Add integration tests for xata. this might help: https://github.com/xataio/client-ts/blob/main/test/utils/setup.ts#L142
+- [ ] Implement functionality to create new users.
