@@ -14,8 +14,56 @@ export const userRouter = express.Router();
  * Controller Definitions
  */
 
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *     users:
+ *      required: 
+ *        - email  
+ *      type: object
+ *      properties:
+ *          id:
+ *              type: integer
+ *              description: User id
+ *          first_name:
+ *              type: string
+ *              description: User's first name
+ *          last_name:
+ *              type: string
+ *              description: User's last name
+ *          email:
+ *              type: string
+ *              description: User's email
+ *          password:
+ *              type: string
+ *              description: User's password
+ */
 
-// POST /user - retrieves the user object if exists or a custom response otherwise
+
+/**
+ * @swagger
+ * /users:
+ *   post:
+ *     tags: 
+ *      - users
+ *     description: Get user by their email address
+ *     requestBody:
+ *       - application/json
+ *     parameters:
+ *       - email: string
+ *         description: User's email address.
+ *         required: true
+ *         type: string
+ *     responses:
+ *      200:
+ *         description: User's object + successful response
+ *      404:
+ *         description: User not found
+ *      500:
+ *         description: Something went wrong
+ */
+
 userRouter.post("/users", async (req: Request, res: Response) => {
   const payload = req.body;
   const { email } = payload;
