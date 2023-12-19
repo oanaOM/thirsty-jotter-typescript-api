@@ -19,7 +19,21 @@ plantsRouter.use("/plants",authMiddleware);
  * Controller Definitions
  */
 
-// GET plants
+/**
+ * @swagger
+ * /plants:
+ *   get:
+ *     tags: 
+ *      - plants
+ *     description: Get a list of user's plants
+ *     requestBody:
+ *       - application/json
+ *     responses:
+ *      200:
+ *         description: User's object + successful response
+ *      500:
+ *         description: Something went wrong
+ */
 plantsRouter.get("/plants", async (req: Request, res: Response) => {
   const page = Number(req.query.page) || 1;
   const size = Number(req.query.size) || 5;
@@ -39,7 +53,23 @@ plantsRouter.get("/plants", async (req: Request, res: Response) => {
   }
 });
 
-// GET plants/:id
+/**
+ * @swagger
+ * /plants/:id:
+ *   get:
+ *     tags: 
+ *      - plants
+ *     description: Get plant by id
+ *     requestBody:
+ *       - application/json
+ *     responses:
+ *      200:
+ *         description: User's object + successful response
+ *      404:
+ *         description: Plant not found
+ *      500:
+ *         description: Something went wrong
+ */
 plantsRouter.get("/plants/:id", async (req: Request, res: Response) => {
   const id = req.params.id;
   try {
@@ -111,6 +141,22 @@ plantsRouter.put("/plants/:id", async (req: Request, res: Response) => {
     });
   }
 });
+
+/**
+ * @swagger
+ * /plants/:id:
+ *   delete:
+ *     tags: 
+ *      - plants
+ *     description: Delete a plant by id
+ *     requestBody:
+ *       - application/json
+ *     responses:
+ *      204:
+ *         description: Plant has been successfully deleted  
+ *      500:
+ *         description: Something went wrong
+ */
 
 // DELETE plants/:id
 plantsRouter.delete("/plants/:id", async (req: Request, res: Response) => {

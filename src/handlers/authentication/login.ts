@@ -11,8 +11,34 @@ const saltRounds = 12;
  * - handle no response from Xata
  */
 
-// POST /login 
-// - validates the hash using the email and password for the payload to authenticate the user
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     tags: 
+ *      - login
+ *     description: Authenticate user by their email address and password
+ *     requestBody:
+ *       - application/json
+ *     parameters:
+ *       - email: string
+ *         description: User's email address.
+ *         required: true
+ *         type: string
+ *       - password: string
+ *         description: User's password.
+ *         required: true
+ *         type: string
+ *     responses:
+ *      200:
+ *         description: User's object + successful response
+ *      404:
+ *         description: User not found
+ *      402:
+ *         description: User has invalid hash
+ *      500:
+ *         description: Something went wrong
+ */
 authRouter.post("/login", async (req: Request, res: Response) => {
   const payload = req.body;
   const { password, email } = payload;

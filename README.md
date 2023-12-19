@@ -21,15 +21,8 @@ This is Restful API that serves the Thirsty Jotter app.
 
 ### Endpoints
 
-- `POST /api/login` - authenticates a user. Read more about the authentication mechanism used [here](./src/handlers/authentication/README.md)
+You can checkout the API documentation by navigating to `http://localhost:8080/api-docs/`. This documentation is powered by Swagger following the OpenAPI 3.0 specifications.
 
-- `POST /api/user/create` - authenticates a user. Read more about the authentication mechanism used [here](./src/handlers/authentication/README.md)
-
-- `GET /api/plants` - retrieve all plants
-- `GET /api/plants/:id` - retrieve a plant by the id
-- `POST /api/plants/:id` - create a plant using the id of the plant
-- `PUT /api/plants/:id` - update a plant using the id of the plant
-- `DELETE /api/plants/:id` - remove a plant using the id of the plant
 
 ### Deploying
 
@@ -65,6 +58,8 @@ curl -i -H "Content-Type:application/json" \
 - https://retool.com/use-case/admin-panels
 - https://github.com/OpenIdentityPlatform/OpenAM/wiki/Stateful-vs-Stateless-Authentication
 - https://github.com/vitest-dev/vitest/discussions/4124
+- [The Pet Store repository](https://github.com/swagger-api/swagger-petstore)
+- [The source API definition for the Pet Store](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)
 
 TODO
 
