@@ -3,7 +3,6 @@ import { Users, getXataClient } from "../../xata";
 
 export const authRouter = express.Router();
 const bcrypt = require("bcryptjs");
-const saltRounds = 12;
 
 /**
  * TODO:

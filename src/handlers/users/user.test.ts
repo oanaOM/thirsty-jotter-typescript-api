@@ -48,7 +48,7 @@ describe("POST /users", () => {
         vi.clearAllMocks();
       });
       it("when payload is missing", async () => {
-        const response = await request(app).post("/api/users").send({});
+        const response = await request(app).post("/api/users/validate").send({});
         expect(response.statusCode).toBe(400);
         expect(response.body.error.message).toBe(
           "Invalid params. Please specify your email"
@@ -65,7 +65,7 @@ describe("POST /users", () => {
     it("and it has a valid hash, then return the user object", async () => {
       getFirst.mockResolvedValue(MOCK_EXISTING_USER);
       const response = await request(app)
-        .post("/api/users")
+        .post("/api/users/validate")
         .set("Accept", "application/json")
         .send(MOCK_USER);
 
@@ -86,7 +86,7 @@ describe("POST /users", () => {
     it("should return 404", async () => {
       getFirst.mockResolvedValue(null);
       const response = await request(app)
-        .post("/api/users")
+        .post("/api/users/validate")
         .set("Accept", "application/json")
         .send(MOCK_USER);
 

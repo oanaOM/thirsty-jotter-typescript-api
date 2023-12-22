@@ -5,36 +5,15 @@ import { plantsRouter } from "./handlers/plants/plants";
 import { errorHandler } from "./middleware/error";
 import { notFoundHandler } from "./middleware/not-found";
 import { authRouter } from "./handlers/authentication/login";
-import { userRouter } from "./handlers/users/validate";
+import { userRouter } from "./handlers/users/user";
 
 import swaggerUI from "swagger-ui-express"
 import swaggerJSdoc from "swagger-jsdoc"
+import { swaggerSpec } from "./swagger";
 
-const PORT: number = parseInt(process.env.PORT as string, 10) || 4000;
+export const PORT: number = parseInt(process.env.PORT as string, 10) || 4000;
 export const app = express();
 
-
-console.log("---HELLO", process.env.PORT)
-
-/**
- *  Swagger Configuration
- */
-const swaggerSpec = {
-    definition: {
-        openapi: '3.0.0',
-        info: {
-            title: 'ThirstyJotter API',
-            version: '1.0.0',
-        },
-        servers: [
-            {
-                url: `http://localhost:${PORT}`,
-            }
-        ]
-    },
-    host: `localhost:${PORT}`, // Host (optional)
-    apis: ["**/*.ts"],
-  }
 
 /**
  *  App Configuration

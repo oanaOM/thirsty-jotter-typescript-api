@@ -18,6 +18,8 @@ This is Restful API that serves the Thirsty Jotter app.
 - XATA_API_KEY
 - XATA_BRANCH
 
+For the xata API keys, you need to have xata CLI installed locally and follow the instructions from their [docs](https://xata.io/docs/getting-started/cli#init).
+
 
 ### Endpoints
 
@@ -48,8 +50,14 @@ curl -i -H "Content-Type:application/json" \
 
 ```bash
 curl -i -H "Content-Type:application/json" \
--X POST "http://localhost:8080/api/users" \
--d '{"pass": "123"}'
+-X POST "http://localhost:8080/api/users/validate" \
+-d '{"email": "goofy+3@him.io"}'
+```
+
+```bash
+curl -i -H "Content-Type:application/json" \
+-X POST "http://localhost:8080/api/users/create" \
+-d '{ "email": "goofy+30@gmail.io", "password": "goody1234", "first_name": "Goofy", "last_name": "Goofy", "country": "UK"}'
 ```
 
 ### Resources
