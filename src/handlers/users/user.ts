@@ -1,6 +1,5 @@
 import express, { Response, Request } from "express";
 import { Users, getXataClient } from "../../xata";
-import { STATUS_CODES } from "http";
 
 const bcrypt = require("bcryptjs");
 const saltRounds = 12;
@@ -65,7 +64,6 @@ export const userRouter = express.Router();
 userRouter.post("/users/validate", async (req: Request, res: Response) => {
 
   const payload = req.body;
-
 
   if (!payload.email) {
     return res.status(400).json({
@@ -153,12 +151,12 @@ userRouter.post("/users/create", async (req: Request, res: Response) => {
 
   if (!email || !first_name || !last_name || !country) {
     return res.status(400).json({
+      status: 400,
       error: {
         message: "Missing params. Please specify your email",
       },
     });
   }
-
 
   try {
     // generate salt
@@ -184,6 +182,7 @@ userRouter.post("/users/create", async (req: Request, res: Response) => {
             .db.users.create(newUser)
             .then((user) => {
               res.status(200).send({
+                status: 200,
                 message: "YAY! User has been successfully created",
                 user: {
                   id: user.id,
@@ -195,6 +194,7 @@ userRouter.post("/users/create", async (req: Request, res: Response) => {
             })
             .catch((err) => {
               res.status(400).send({
+                status: 400,
                 error: {
                   message:
                     "Oops, something went wrong when creating the user in db",
