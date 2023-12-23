@@ -1682,10 +1682,10 @@
     loupe "^2.3.6"
     pretty-format "^29.5.0"
 
-"@xata.io/client@^0.27.0":
-  version "0.27.0"
-  resolved "https://registry.yarnpkg.com/@xata.io/client/-/client-0.27.0.tgz#39ba5649d19d683802566db111770d957e2e497e"
-  integrity sha512-tmmV4w7crXMtM/brizVUbg5u1eKPjagoSqt5ydSIe8xyi6VtHRGHTvZkeBNEHh8PaMAjjyRS2DsLgI59LASINg==
+"@xata.io/client@^0.28.2":
+  version "0.28.2"
+  resolved "https://registry.yarnpkg.com/@xata.io/client/-/client-0.28.2.tgz#ccd8be5a3e71fca0709eaac1c6c508926b6669ec"
+  integrity sha512-B5eCr5peggaDCfjsVIpXBxj4TgOg8K15RdCBEuBPXwDGRmZF+/1IILGztP1R46XbskJAHFX0jCmfLQEPWNV5Mw==
 
 abbrev@1:
   version "1.1.1"

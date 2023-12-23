@@ -1,13 +1,8 @@
 /**
- * GET /api/users
- * payload:{
- *  email: "bla@gmail.com"
- * }
  * 
  * TODO: 
  * - validate that email is an email
  */
-
 
 
 import request from "supertest";
@@ -15,7 +10,6 @@ import { app } from "../../app";
 import {
   MOCK_EXISTING_USER,
   MOCK_USER,
-  MOCK_USER_CREDENTIALS,
 } from "../../../test/mocks/fixtures/users";
 
 const create = vi.hoisted(() => vi.fn());
@@ -48,13 +42,13 @@ describe("POST /users", () => {
         vi.clearAllMocks();
       });
       it("when payload is missing", async () => {
-        const response = await request(app).post("/api/users").send({});
+        const response = await request(app).post("/api/users/validate").send({});
         expect(response.statusCode).toBe(400);
         expect(response.body.error.message).toBe(
-          "Invalid params. Please specify your email"
+          "Invalid params. Please specify your email."
         );
       });
-      
+
     });
   });
 
@@ -65,16 +59,17 @@ describe("POST /users", () => {
     it("and it has a valid hash, then return the user object", async () => {
       getFirst.mockResolvedValue(MOCK_EXISTING_USER);
       const response = await request(app)
-        .post("/api/users")
+        .post("/api/users/validate")
         .set("Accept", "application/json")
         .send(MOCK_USER);
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toEqual({
-       user:{
-        email: MOCK_EXISTING_USER.email,
-        id: MOCK_EXISTING_USER.id,
-       }
+        status: 200,
+        user: {
+          id: MOCK_EXISTING_USER.id,
+          email: MOCK_EXISTING_USER.email,
+        }
       });
     });
   });
@@ -86,13 +81,13 @@ describe("POST /users", () => {
     it("should return 404", async () => {
       getFirst.mockResolvedValue(null);
       const response = await request(app)
-        .post("/api/users")
+        .post("/api/users/validate")
         .set("Accept", "application/json")
         .send(MOCK_USER);
 
       expect(response.statusCode).toBe(404);
       expect(response.body.error.message).toBe("User not found");
-    });     
+    });
     // it("should return 500 for any other error", () => {});
   });
 });
