@@ -1,3 +1,30 @@
+
+### Testing
+
+*User*
+
+```bash
+curl -i -H "Content-Type:application/json" \
+-X POST "http://localhost:8080/api/users/validate" \
+-d '{"email": "goofy+3@him.io"}'
+```
+
+
+```bash
+curl -i -H "Content-Type:application/json" \
+-X POST "http://localhost:8080/api/users/create" \
+-d '{ "email": "goofy+30@gmail.io", "password": "goody1234", "first_name": "Goofy", "last_name": "Goofy", "country": "UK"}'
+```
+
+*Authentication*
+
+```bash
+curl -i -H "Content-Type:application/json" \
+-X POST "http://localhost:8080/api/login" \
+-d '{"pass": "123", "user": "goofy"}'
+```
+
+
 ### XATA error message:
 
 ```js

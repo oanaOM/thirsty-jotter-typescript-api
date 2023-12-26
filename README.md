@@ -33,32 +33,9 @@ To build docker image:
 ```shell
 docker build -t thirsty-jotter-typescript-api .
 ```
-
-
 ### Testing
 
-- authentication
 
-```bash
-curl -i -H "Content-Type:application/json" \
--X POST "http://localhost:8080/api/login" \
--d '{"pass": "123", "user": "goofy"}'
-```
-
-
-- user
-
-```bash
-curl -i -H "Content-Type:application/json" \
--X POST "http://localhost:8080/api/users/validate" \
--d '{"email": "goofy+3@him.io"}'
-```
-
-```bash
-curl -i -H "Content-Type:application/json" \
--X POST "http://localhost:8080/api/users/create" \
--d '{ "email": "goofy+30@gmail.io", "password": "goody1234", "first_name": "Goofy", "last_name": "Goofy", "country": "UK"}'
-```
 
 ### Resources
 
@@ -66,8 +43,8 @@ curl -i -H "Content-Type:application/json" \
 - https://retool.com/use-case/admin-panels
 - https://github.com/OpenIdentityPlatform/OpenAM/wiki/Stateful-vs-Stateless-Authentication
 - https://github.com/vitest-dev/vitest/discussions/4124
-- [The Pet Store repository](https://github.com/swagger-api/swagger-petstore)
-- [The source API definition for the Pet Store](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)
+- [Swagger: The Pet Store repository](https://github.com/swagger-api/swagger-petstore)
+- [Swagger: The source API definition for the Pet Store](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)
 
 TODO
 

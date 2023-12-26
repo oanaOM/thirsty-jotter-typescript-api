@@ -2,3 +2,4 @@
 .xatarc
 .xata
 /node_modules
+/build
