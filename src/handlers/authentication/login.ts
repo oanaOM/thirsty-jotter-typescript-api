@@ -1,5 +1,6 @@
 import express, { Response, Request } from "express";
 import { Users, getXataClient } from "../../xata";
+import { ApiError, ApiResponse } from "../../common/types";
 
 export const authRouter = express.Router();
 const bcrypt = require("bcryptjs");
@@ -10,6 +11,10 @@ const bcrypt = require("bcryptjs");
  * - handle no response from Xata
  */
 
+type LoginRequest = {
+  email: string,
+  password: string,
+}
 /**
  * @swagger
  * /login:
@@ -19,33 +24,34 @@ const bcrypt = require("bcryptjs");
  *     description: Authenticate user by their email address and password
  *     requestBody:
  *       - application/json
- *     parameters:
- *       - email: string
- *         description: User's email address.
- *         required: true
- *         type: string
- *       - password: string
- *         description: User's password.
- *         required: true
- *         type: string
  *     responses:
  *      200:
- *         description: User's object + successful response
+ *         description: "User's object + successful response"
+ *         examples:
+ *          application/json: { status: 200, "user": { email: "sample@gmail.com" }, "message": "Successfully authenticated" }
+ *      402:
+ *         description: User with invalid hash
+ *         examples:
+ *          application/json: { status: 402, "error": { message: "User has invalid hash" } } 
+ *      400:
+ *         description: Missing params. Please specify your email and password
+ *         examples:
+ *          application/json: { status: 400, "error": { message: "Missing params. Please specify your email and password" } } 
  *      404:
  *         description: User not found
- *      402:
- *         description: User has invalid hash
- *      500:
- *         description: Something went wrong
+ *         examples:
+ *          application/json: { status: 404, "error": { message: "User not found" } }
+ * 
  */
-authRouter.post("/login", async (req: Request, res: Response) => {
+authRouter.post("/login", async (req: Request<LoginRequest>, res: Response<ApiResponse | ApiError>) => {
   const payload = req.body;
   const { password, email } = payload;
 
   if (!password || !email) {
     return res.status(400).send({
+      status: 400,
       error: {
-        message: "Invalid params. Please specify your email and password",
+        message: "Missing params. Please specify your email and password",
       },
     });
   }
@@ -56,19 +62,28 @@ authRouter.post("/login", async (req: Request, res: Response) => {
     .getFirst();
 
   if (existingUser != null) {
-    // validate the hash
 
     const isValidHash = bcrypt.compareSync(
-      JSON.stringify(payload),
+      JSON.stringify({ email, password }),
       existingUser.hash
     );
+
+    console.log("--POST /login: hash:", existingUser.hash)
+    console.log("--POST /login: password: ", password)
+    console.log("--POST /login: isValidHash:", isValidHash)
+
     if (isValidHash) {
       res.status(200).send({
-        message: "Welcome back user",
-        email: existingUser.email,
+        status: 200,
+        user: {
+          id: existingUser.id,
+          email: existingUser.email,
+        },
+        message: "Successfully authenticated",
       });
     } else {
       res.status(402).send({
+        status: 402,
         error: {
           message: "User has invalid hash",
         },
@@ -76,6 +91,7 @@ authRouter.post("/login", async (req: Request, res: Response) => {
     }
   } else {
     res.status(404).json({
+      status: 404,
       error: {
         message: "User not found",
       }

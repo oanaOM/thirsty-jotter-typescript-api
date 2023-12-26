@@ -1,16 +1,16 @@
 export const MOCK_HASH =
-  "$2a$12$26/XIvCi14NnjJx6bUe4jekKkgBjtjQzIcES8wnFPhOhLP68K/qg6";
-export const MOCK_USER_CREDENTIALS = {
-  password: "1234",
-  email: "goofy@him.io",
-};
-
+  "$2a$12$vm1YLzw/DTlmGq3iadvRGeLiEqOudQTEFt0xPHpof7cuWj.JwXnXG";
 export const MOCK_USER = {
   email: "goofy@him.io",
 };
+export const MOCK_USER_CREDENTIALS = {
+  email: MOCK_USER.email,
+  password: "1234",
+};
+
 
 export const MOCK_EXISTING_USER = {
-  email: "goofy@him.io",
+  email: MOCK_USER.email,
   hash: MOCK_HASH,
   id: "rec_clboug5ptuhrulp3n1ng",
   salt: null,

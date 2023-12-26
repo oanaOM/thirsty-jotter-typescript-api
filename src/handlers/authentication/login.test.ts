@@ -39,7 +39,7 @@ describe("POST /login", () => {
         const response = await request(app).post("/api/login").send({});
         expect(response.statusCode).toBe(400);
         expect(response.body.error.message).toBe(
-          "Invalid params. Please specify your email and password"
+          "Missing params. Please specify your email and password"
         );
       });
       it("when one of the param is misspelled", async () => {
@@ -48,7 +48,7 @@ describe("POST /login", () => {
           .send({ pass: "123" });
         expect(response.statusCode).toBe(400);
         expect(response.body.error.message).toBe(
-          "Invalid params. Please specify your email and password"
+          "Missing params. Please specify your email and password"
         );
       });
       it("when one of the param is missing", async () => {
@@ -57,7 +57,7 @@ describe("POST /login", () => {
           .send({ password: "123" });
         expect(response.statusCode).toBe(400);
         expect(response.body.error.message).toBe(
-          "Invalid params. Please specify your email and password"
+          "Missing params. Please specify your email and password"
         );
       });
     });
@@ -67,6 +67,7 @@ describe("POST /login", () => {
     afterEach(() => {
       vi.clearAllMocks();
     });
+
     it("and it has a valid hash, then return the user object", async () => {
       getFirst.mockResolvedValue(MOCK_EXISTING_USER);
       const response = await request(app)
@@ -76,10 +77,15 @@ describe("POST /login", () => {
 
       expect(response.statusCode).toBe(200);
       expect(response.body).toEqual({
-        message: "Welcome back user",
-        email: MOCK_EXISTING_USER.email,
+        status: 200,
+        message: "Successfully authenticated",
+        user: {
+          id: MOCK_EXISTING_USER.id,
+          email: MOCK_EXISTING_USER.email,
+        }
       });
     });
+
     it("and it has an invalid hash, return 402", async () => {
       getFirst.mockResolvedValue({
         ...MOCK_EXISTING_USER,
@@ -107,8 +113,7 @@ describe("POST /login", () => {
 
       expect(response.statusCode).toBe(404);
       expect(response.body.error.message).toBe("User not found");
-    });  
+    });
 
-    // it("should return 500 for any other error", () => {});
   });
 });

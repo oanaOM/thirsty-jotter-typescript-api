@@ -1,5 +1,13 @@
 import express, { Response, Request } from "express";
 import { Users, getXataClient } from "../../xata";
+import { ApiError, ApiResponse } from "../../common/types";
+
+type ValidateUserRequest = {
+  email: string,
+}
+type CreateUserRequest = Omit<Users, "id">
+
+
 
 const bcrypt = require("bcryptjs");
 const saltRounds = 12;
@@ -61,7 +69,7 @@ export const userRouter = express.Router();
  *         description: Something went wrong
  */
 
-userRouter.post("/users/validate", async (req: Request, res: Response) => {
+userRouter.post("/users/validate", async (req: Request<ValidateUserRequest>, res: Response<ApiResponse | ApiError>) => {
 
   const payload = req.body;
 
@@ -69,7 +77,7 @@ userRouter.post("/users/validate", async (req: Request, res: Response) => {
     return res.status(400).json({
       status: 400,
       error: {
-        message: "Invalid params. Please specify your email.",
+        message: "Missing params. Please specify your email.",
       },
     });
   }
@@ -85,7 +93,8 @@ userRouter.post("/users/validate", async (req: Request, res: Response) => {
         user: {
           id: user.id,
           email: user.email,
-        }
+        },
+        message: "User found",
       });
     } else {
       res.status(404).json({
@@ -97,8 +106,11 @@ userRouter.post("/users/validate", async (req: Request, res: Response) => {
     }
   } catch (e) {
     res.status(500).json({
-      message: "Something went wrong",
-      error: e
+      status: 500,
+      error: {
+        message: "Something went wrong",
+        stack: JSON.stringify(e)
+      }
     });
   }
 });
@@ -145,11 +157,11 @@ userRouter.post("/users/validate", async (req: Request, res: Response) => {
  *         description: Something went wrong
  */
 
-userRouter.post("/users/create", async (req: Request, res: Response) => {
+userRouter.post("/users/create", async (req: Request, res: Response<ApiResponse | ApiError>) => {
   const payload = req.body;
-  const { first_name, last_name, email, country } = payload;
+  const { first_name, last_name, email, country, password } = payload;
 
-  if (!email || !first_name || !last_name || !country) {
+  if (!email || !first_name || !last_name || !country || !password) {
     return res.status(400).json({
       status: 400,
       error: {
@@ -164,26 +176,28 @@ userRouter.post("/users/create", async (req: Request, res: Response) => {
       if (err) throw err;
       // generate hash
       bcrypt.hash(
-        JSON.stringify(req.body),
+        JSON.stringify({ email, password }),
         salt,
         async function (err: string, hash: string) {
           if (err) throw err;
-          const newUser: Omit<Users, "id"> = {
+          const newUser: CreateUserRequest = {
             email,
             first_name,
             last_name,
             country,
             hash,
             salt,
+            password
           };
 
+          console.log("--POST /user/create: Creating new user: ", newUser)
 
           await getXataClient()
             .db.users.create(newUser)
             .then((user) => {
               res.status(200).send({
                 status: 200,
-                message: "YAY! User has been successfully created",
+                message: "User successfully created",
                 user: {
                   id: user.id,
                   email: user.email,
@@ -198,7 +212,7 @@ userRouter.post("/users/create", async (req: Request, res: Response) => {
                 error: {
                   message:
                     "Oops, something went wrong when creating the user in db",
-                  error: err,
+                  stack: err,
                 },
               });
             });
@@ -206,6 +220,12 @@ userRouter.post("/users/create", async (req: Request, res: Response) => {
       );
     });
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).send({
+      status: 500,
+      error: {
+        message: "Oops, something went wrong",
+        stack: JSON.stringify(err),
+      },
+    });
   }
 });

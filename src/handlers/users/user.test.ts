@@ -45,7 +45,7 @@ describe("POST /users", () => {
         const response = await request(app).post("/api/users/validate").send({});
         expect(response.statusCode).toBe(400);
         expect(response.body.error.message).toBe(
-          "Invalid params. Please specify your email."
+          "Missing params. Please specify your email."
         );
       });
 
@@ -66,6 +66,7 @@ describe("POST /users", () => {
       expect(response.statusCode).toBe(200);
       expect(response.body).toEqual({
         status: 200,
+        message: "User found",
         user: {
           id: MOCK_EXISTING_USER.id,
           email: MOCK_EXISTING_USER.email,
