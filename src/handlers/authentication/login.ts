@@ -17,15 +17,20 @@ type LoginRequest = {
   password: string,
 }
 
-const sessionMiddleware = session({
+const sessionOpt = {
   secret: "superSecretKey",
   resave: true,
   saveUninitialized: true,
-  cookie: { maxAge: 1000 * 60 * 60 * 24 },
-});
+  cookie: { maxAge: 1000 * 60 * 60 * 24, secure: false },
+}
+
+if (process.env.NODE_ENV === 'production') {
+  sessionOpt.cookie.secure = true // serve secure cookies
+}
+
 
 // Middleware
-authRouter.use("/login", sessionMiddleware);
+authRouter.use("/login", session(sessionOpt));
 
 
 /**
@@ -81,8 +86,6 @@ authRouter.post("/login", express.urlencoded({ extended: false }), async (req: R
       existingUser.hash
     );
 
-    console.log("--POST /login: hash:", existingUser.hash)
-    console.log("--POST /login: password: ", password)
     console.log("--POST /login: isValidHash:", isValidHash)
 
     if (isValidHash) {

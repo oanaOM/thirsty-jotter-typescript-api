@@ -18,6 +18,11 @@ export const app = express();
 /**
  *  App Configuration
  */
+
+if (app.get('env') === 'production') {
+    app.set('trust proxy', 1) // trust first proxy
+}
+
 app.use(helmet());
 app.use(cors({ credentials: true, origin: 'http://localhost:4321' }));
 app.use(
