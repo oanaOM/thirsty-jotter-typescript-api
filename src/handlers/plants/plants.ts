@@ -5,7 +5,7 @@
 import express, { Response, Request } from "express";
 import { Plants, getXataClient } from "../../xata";
 import * as dotenv from "dotenv";
-import { authMiddleware } from "../../middleware/authorization";
+import { sessionMiddleware } from "../../middleware/session";
 
 dotenv.config();
 
@@ -13,7 +13,7 @@ export const plantsRouter = express.Router();
 
 
 // Middleware
-plantsRouter.use("/plants",authMiddleware);
+plantsRouter.use("/plants", sessionMiddleware);
 
 /**
  * Controller Definitions
