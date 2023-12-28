@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "build": "rimraf ./build && tsc",
+    "build": "NODE_ENV=production rimraf ./build && tsc",
     "dev": "ts-node-dev --respawn --pretty --transpile-only src/index.ts",
     "test": "vitest",
     "lint": "eslint ."
