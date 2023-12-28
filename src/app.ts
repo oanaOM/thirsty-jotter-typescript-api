@@ -19,7 +19,7 @@ export const app = express();
  *  App Configuration
  */
 app.use(helmet());
-app.use(cors());
+app.use(cors({ credentials: true, origin: 'http://localhost:4321' }));
 app.use(
     '/api-docs',
     swaggerUI.serve,

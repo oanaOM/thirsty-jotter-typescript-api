@@ -1,6 +1,7 @@
 import express, { Response, Request } from "express";
 import { Users, getXataClient } from "../../xata";
 import { ApiError, ApiResponse } from "../../common/types";
+import session from "express-session";
 
 export const authRouter = express.Router();
 const bcrypt = require("bcryptjs");
@@ -15,6 +16,18 @@ type LoginRequest = {
   email: string,
   password: string,
 }
+
+const sessionMiddleware = session({
+  secret: "superSecretKey",
+  resave: true,
+  saveUninitialized: true,
+  cookie: { maxAge: 1000 * 60 * 60 * 24 },
+});
+
+// Middleware
+authRouter.use("/login", sessionMiddleware);
+
+
 /**
  * @swagger
  * /login:
@@ -43,7 +56,7 @@ type LoginRequest = {
  *          application/json: { status: 404, "error": { message: "User not found" } }
  * 
  */
-authRouter.post("/login", async (req: Request<LoginRequest>, res: Response<ApiResponse | ApiError>) => {
+authRouter.post("/login", express.urlencoded({ extended: false }), async (req: Request<LoginRequest>, res: Response<ApiResponse | ApiError>, next) => {
   const payload = req.body;
   const { password, email } = payload;
 
@@ -73,14 +86,32 @@ authRouter.post("/login", async (req: Request<LoginRequest>, res: Response<ApiRe
     console.log("--POST /login: isValidHash:", isValidHash)
 
     if (isValidHash) {
-      res.status(200).send({
-        status: 200,
-        user: {
-          id: existingUser.id,
-          email: existingUser.email,
-        },
-        message: "Successfully authenticated",
-      });
+
+      req.session.regenerate(function (err) {
+        if (err) {
+          next(err)
+        }
+
+        req.session.user = existingUser.id;
+
+        req.session.save(function (err) {
+          if (err) {
+            next(err)
+          }
+
+          res.status(200).send({
+            status: 200,
+            user: {
+              id: existingUser.id,
+              email: existingUser.email,
+            },
+            message: "Successfully authenticated",
+          });
+
+        })
+
+      })
+
     } else {
       res.status(402).send({
         status: 402,
