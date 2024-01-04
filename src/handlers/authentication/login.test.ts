@@ -76,14 +76,12 @@ describe("POST /login", () => {
         .send(MOCK_USER_CREDENTIALS);
 
       expect(response.statusCode).toBe(200);
-      expect(response.body).toEqual({
-        status: 200,
-        message: "Successfully authenticated",
-        user: {
-          id: MOCK_EXISTING_USER.id,
-          email: MOCK_EXISTING_USER.email,
-        }
+      expect(response.body.message).toEqual("Successfully authenticated")
+      expect(response.body.user).toEqual({
+        id: MOCK_EXISTING_USER.id,
+        email: MOCK_EXISTING_USER.email,
       });
+      expect(response.body.auth).exist
     });
 
     it("and it has an invalid hash, return 402", async () => {

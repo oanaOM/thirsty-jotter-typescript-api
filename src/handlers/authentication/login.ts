@@ -102,8 +102,6 @@ authRouter.post("/login", express.urlencoded({ extended: false }), async (req: R
             next(err)
           }
 
-          console.log("header here: ", req.session.cookie.expires)
-
           res.status(200).send({
             status: 200,
             user: {

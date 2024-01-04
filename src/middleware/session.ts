@@ -11,7 +11,7 @@ export const sessionMiddleware = async (
     if (request.headers.cookie && request.headers.cookie?.length > 0) {
         next()
     } else {
-        console.log("Path: ", request.path)
+        console.info("Path: ", request.path)
         console.info("Session middleware - cookie session is missing/expired ",)
         response.status(440).send({
             error: {
