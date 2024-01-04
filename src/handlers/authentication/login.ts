@@ -1,6 +1,6 @@
 import express, { Response, Request } from "express";
 import { Users, getXataClient } from "../../xata";
-import { ApiError, ApiResponse } from "../../common/types";
+import { ApiAuthResponse, ApiError, ApiResponse } from "../../common/types";
 import session from "express-session";
 
 export const authRouter = express.Router();
@@ -61,7 +61,7 @@ authRouter.use("/login", session(sessionOpt));
  *          application/json: { status: 404, "error": { message: "User not found" } }
  * 
  */
-authRouter.post("/login", express.urlencoded({ extended: false }), async (req: Request<LoginRequest>, res: Response<ApiResponse | ApiError>, next) => {
+authRouter.post("/login", express.urlencoded({ extended: false }), async (req: Request<LoginRequest>, res: Response<ApiAuthResponse | ApiError>, next) => {
   const payload = req.body;
   const { password, email } = payload;
 
@@ -102,11 +102,16 @@ authRouter.post("/login", express.urlencoded({ extended: false }), async (req: R
             next(err)
           }
 
+          console.log("header here: ", req.session.cookie.expires)
+
           res.status(200).send({
             status: 200,
             user: {
               id: existingUser.id,
               email: existingUser.email,
+            },
+            auth: {
+              expiryDate: req.session.cookie.expires,
             },
             message: "Successfully authenticated",
           });
