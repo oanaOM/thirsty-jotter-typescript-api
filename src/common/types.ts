@@ -11,3 +11,9 @@ export interface ApiResponse {
 export interface ApiError {
     error: Omit<Error, "name">,
 }
+
+export interface ApiAuthResponse extends ApiResponse {
+    auth: {
+        expiryDate: Date | null | undefined;
+    }
+}
