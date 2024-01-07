@@ -84,7 +84,7 @@ describe("POST /login", () => {
       expect(response.body.auth).exist
     });
 
-    it("and it has an invalid hash, return 402", async () => {
+    it("and it has an invalid hash, return 401", async () => {
       getFirst.mockResolvedValue({
         ...MOCK_EXISTING_USER,
         hash: "too_small",
@@ -92,8 +92,8 @@ describe("POST /login", () => {
       const response = await request(app)
         .post("/api/login")
         .send(MOCK_USER_CREDENTIALS);
-      expect(response.statusCode).toBe(402);
-      expect(response.body.error.message).toContain("User has invalid hash");
+      expect(response.statusCode).toBe(401);
+      expect(response.body.error.message).toContain("Unauthorized");
     });
   });
 
@@ -115,3 +115,13 @@ describe("POST /login", () => {
 
   });
 });
+
+
+describe("GET /logout", () => {
+  it("should remove user session and return 302", async () => {
+    const response = await request(app).get("/api/logout");
+
+    expect(response.statusCode).toBe(302);
+    expect(response.headers.location).toBe("http://localhost:4321/sign-in");
+  });
+})

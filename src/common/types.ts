@@ -1,6 +1,8 @@
 import { Users } from "../xata";
 
-export type StatusCodes = 200 | 400 | 402 | 404 | 500;
+// 401 - Unauthorized
+// 403 Forbidden
+export type StatusCodes = 200 | 400 | 402 | 401 | 404 | 500;
 
 export interface ApiResponse {
     status: StatusCodes,
