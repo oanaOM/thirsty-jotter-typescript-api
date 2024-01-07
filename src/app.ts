@@ -4,7 +4,7 @@ import helmet from "helmet";
 import { plantsRouter } from "./handlers/plants/plants";
 import { errorHandler } from "./middleware/error";
 import { notFoundHandler } from "./middleware/not-found";
-import { authRouter } from "./handlers/authentication/login";
+import { authRouter } from "./handlers/authentication/authentication";
 import { userRouter } from "./handlers/users/user";
 
 import swaggerUI from "swagger-ui-express"

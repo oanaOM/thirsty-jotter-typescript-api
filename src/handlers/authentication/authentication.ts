@@ -22,6 +22,7 @@ const sessionOpt = {
   resave: true,
   saveUninitialized: true,
   cookie: { maxAge: 1000 * 60 * 60 * 24, secure: false },
+  user: ""
 }
 
 if (process.env.NODE_ENV === 'production') {
@@ -31,6 +32,7 @@ if (process.env.NODE_ENV === 'production') {
 
 // Middleware
 authRouter.use("/login", session(sessionOpt));
+authRouter.use("/logout", session(sessionOpt));
 
 
 /**
@@ -119,10 +121,10 @@ authRouter.post("/login", express.urlencoded({ extended: false }), async (req: R
       })
 
     } else {
-      res.status(402).send({
-        status: 402,
+      res.status(401).send({
+        status: 401,
         error: {
-          message: "User has invalid hash",
+          message: "Unauthorized",
         },
       });
     }
@@ -134,4 +136,38 @@ authRouter.post("/login", express.urlencoded({ extended: false }), async (req: R
       }
     });
   }
+});
+
+
+
+/**
+ * @swagger
+ * /logout:
+ *   get:
+ *     tags: 
+ *      - logout
+ *     description: Clear user session
+ *     requestBody:
+ *       - application/json
+ *     responses:
+ *      302:
+ *         description: Clears user session and redirects to sign-in page
+ */
+authRouter.get("/logout", async (req: Request, res: Response, next) => {
+  req.session.user = null;
+  req.session.save(function (err) {
+    if (err) next(err);
+
+    req.session.destroy(function (err) {
+      if (err) next(err);
+
+      console.info("--GET /logout - clearing the session")
+      res.clearCookie("connect.sid")
+      res.redirect("http://localhost:4321/sign-in");
+
+
+    })
+
+  })
+
 });
