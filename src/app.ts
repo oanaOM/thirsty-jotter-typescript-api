@@ -10,6 +10,8 @@ import { userRouter } from "./handlers/users/user";
 import swaggerUI from "swagger-ui-express"
 import swaggerJSdoc from "swagger-jsdoc"
 import { swaggerSpec } from "./swagger";
+import session from "express-session";
+import { sessionOpt } from "./common/session";
 
 export const PORT: number = parseInt(process.env.PORT as string, 10) || 4000;
 export const app = express();
@@ -23,6 +25,15 @@ if (app.get('env') === 'production') {
     app.set('trust proxy', 1) // trust first proxy
 }
 
+/**
+ *  Middlewares
+ */
+
+app.use(express.urlencoded({ extended: true })); // parse Request Object as strings or arrays
+app.use(express.json());
+
+app.use(session(sessionOpt))
+
 app.use(helmet());
 app.use(cors({ credentials: true, origin: 'http://localhost:4321' }));
 app.use(
@@ -31,7 +42,6 @@ app.use(
     swaggerUI.setup(swaggerJSdoc(swaggerSpec))
 )
 // parses the incoming request with JSON payloads
-app.use(express.json());
 app.use("/api", authRouter);
 app.use("/api", plantsRouter);
 app.use("/api", userRouter);

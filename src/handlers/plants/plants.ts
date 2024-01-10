@@ -35,14 +35,28 @@ plantsRouter.use("/plants", sessionMiddleware);
  *         description: Something went wrong
  */
 plantsRouter.get("/plants", async (req: Request, res: Response) => {
+
   const page = Number(req.query.page) || 1;
   const size = Number(req.query.size) || 5;
   const offset = size * page - size;
 
-  try {
-    const plants = await getXataClient().db.plants.getPaginated({
-      pagination: { size, offset },
+  const userId = req.session.user;
+
+  if (!userId) {
+    res.status(401).send({
+      status: 401,
+      error: {
+        message: "Unauthorized. Session expired",
+      },
     });
+  }
+
+  try {
+    const plants = await getXataClient().db.plants
+      .filter({ user_id: req.session.user })
+      .getPaginated({
+        pagination: { size, offset },
+      });
 
     res.status(200).json(plants);
   } catch (e) {

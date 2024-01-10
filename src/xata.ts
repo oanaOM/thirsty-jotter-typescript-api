@@ -22,6 +22,7 @@ const tables = [
       { name: "quantity", type: "int" },
       { name: "name", type: "string" },
       { name: "labels", type: "string" },
+      { name: "user_id", type: "string" },
     ],
   },
   {

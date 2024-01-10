@@ -1,7 +1,6 @@
 import express, { Response, Request } from "express";
 import { Users, getXataClient } from "../../xata";
-import { ApiAuthResponse, ApiError, ApiResponse } from "../../common/types";
-import session from "express-session";
+import { ApiAuthResponse, ApiError } from "../../common/types";
 
 export const authRouter = express.Router();
 const bcrypt = require("bcryptjs");
@@ -16,24 +15,6 @@ type LoginRequest = {
   email: string,
   password: string,
 }
-
-const sessionOpt = {
-  secret: "superSecretKey",
-  resave: true,
-  saveUninitialized: true,
-  cookie: { maxAge: 1000 * 60 * 60 * 24, secure: false },
-  user: ""
-}
-
-if (process.env.NODE_ENV === 'production') {
-  sessionOpt.cookie.secure = true // serve secure cookies
-}
-
-
-// Middleware
-authRouter.use("/login", session(sessionOpt));
-authRouter.use("/logout", session(sessionOpt));
-
 
 /**
  * @swagger
@@ -57,6 +38,10 @@ authRouter.use("/logout", session(sessionOpt));
  *         description: Missing params. Please specify your email and password
  *         examples:
  *          application/json: { status: 400, "error": { message: "Missing params. Please specify your email and password" } } 
+ *      401:
+ *         description: Unauthorized. Session expired
+ *         examples:
+ *          application/json: { status: 400, "error": { message: "Unauthorized" } } 
  *      404:
  *         description: User not found
  *         examples:
@@ -115,11 +100,8 @@ authRouter.post("/login", express.urlencoded({ extended: false }), async (req: R
             },
             message: "Successfully authenticated",
           });
-
         })
-
       })
-
     } else {
       res.status(401).send({
         status: 401,
@@ -164,10 +146,6 @@ authRouter.get("/logout", async (req: Request, res: Response, next) => {
       console.info("--GET /logout - clearing the session")
       res.clearCookie("connect.sid")
       res.redirect("http://localhost:4321/sign-in");
-
-
     })
-
   })
-
 });
