@@ -6,6 +6,7 @@ import express, { Response, Request } from "express";
 import { Plants, getXataClient } from "../../xata";
 import * as dotenv from "dotenv";
 import { sessionMiddleware } from "../../middleware/session";
+import { ApiError, ApiResponsePlant } from "../../common/types";
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ export const plantsRouter = express.Router();
 
 // Middleware
 plantsRouter.use("/plants", sessionMiddleware);
+plantsRouter.use("/plants/:id", sessionMiddleware);
 
 /**
  * Controller Definitions
@@ -34,22 +36,12 @@ plantsRouter.use("/plants", sessionMiddleware);
  *      500:
  *         description: Something went wrong
  */
-plantsRouter.get("/plants", async (req: Request, res: Response) => {
+plantsRouter.get("/plants", async (req: Request, res: Response<ApiResponsePlant | ApiError>) => {
 
+  console.log("PLANTS: req cookies:", req.session)
   const page = Number(req.query.page) || 1;
   const size = Number(req.query.size) || 5;
   const offset = size * page - size;
-
-  const userId = req.session.user;
-
-  if (!userId) {
-    res.status(401).send({
-      status: 401,
-      error: {
-        message: "Unauthorized. Session expired",
-      },
-    });
-  }
 
   try {
     const plants = await getXataClient().db.plants
@@ -58,11 +50,18 @@ plantsRouter.get("/plants", async (req: Request, res: Response) => {
         pagination: { size, offset },
       });
 
-    res.status(200).json(plants);
+    res.status(200).json({
+      status: 200,
+      plants: plants.records,
+      message: "Successfully retrieve the list of plants."
+    });
   } catch (e) {
     res.status(500).json({
-      message: "Something went wrong",
-      error: e
+      status: 500,
+      error: {
+        message: "Something went wrong",
+        stack: JSON.stringify(e)
+      }
     });
   }
 });
@@ -84,16 +83,21 @@ plantsRouter.get("/plants", async (req: Request, res: Response) => {
  *      500:
  *         description: Something went wrong
  */
-plantsRouter.get("/plants/:id", async (req: Request, res: Response) => {
+plantsRouter.get("/plants/:id", async (req: Request, res: Response<ApiResponsePlant | ApiError>) => {
   const id = req.params.id;
+
   try {
-    // const plant = await PlantService.findByID(id);
     const plant = await getXataClient().db.plants.read(id);
 
     if (plant != null) {
-      res.status(200).json(plant);
+      res.status(200).json({
+        status: 200,
+        plants: [plant],
+        message: "Successfully retrieve the list of plants."
+      });
     } else {
       res.status(404).json({
+        status: 404,
         error: {
           message: "Plant not found",
         }
@@ -101,57 +105,87 @@ plantsRouter.get("/plants/:id", async (req: Request, res: Response) => {
     }
   } catch (e) {
     res.status(500).json({
-      message: "Something went wrong",
-      error: e
+      status: 500,
+      error: {
+        message: "Something went wrong",
+        stack: JSON.stringify(e)
+      }
     });
   }
 });
 
 // POST plants
-plantsRouter.post("/plants", async (req: Request, res: Response) => {
+plantsRouter.post("/plants", async (req: Request, res: Response<ApiResponsePlant | ApiError>) => {
+  const newPlant: Plants = req.body;
+
+  if (Object.keys(newPlant).length === 0) {
+    return res.status(204).send({
+      status: 204,
+      message: "Payload is empty.",
+      plants: []
+    });
+  }
+
   try {
-    const newPlant: Plants = req.body;
-
-    if (Object.keys(newPlant).length === 0) {
-      return res.status(204).send("Payload is empty.");
-    }
-
     const plant = await getXataClient().db.plants.create(newPlant);
 
-    res.status(201).json(plant);
+    res.status(201).json({
+      status: 201,
+      plants: [plant],
+      message: "Successfully created a new plant."
+    });
   } catch (e) {
     res.status(500).json({
-      message: "Something went wrong",
-      error: e
+      status: 500,
+      error: {
+        message: "Something went wrong",
+        stack: JSON.stringify(e)
+      }
     });
   }
 });
 
 // PUT plants/:id
-plantsRouter.put("/plants/:id", async (req: Request, res: Response) => {
-  const id = req.params.id;
+plantsRouter.put("/plants/:id", async (req: Request, res: Response<ApiResponsePlant | ApiError>) => {
+  const newPlant: Plants = req.body;
+
+  if (Object.keys(newPlant).length === 0) {
+    return res.status(204).send({
+      status: 204,
+      message: "Payload is empty.",
+      plants: []
+    });
+  }
+
   try {
     const plantUpdate: Plants = req.body;
     if (!plantUpdate) {
-      res.status(404).send("Payload is empty.");
+      res.status(404).send();
     }
     // const existingPlant = await PlantService.findByID(id);
 
     // if (!existingPlant) {
     // const updatedPlant = await PlantService.update(id, plantUpdate);
     const updatedPlant = await getXataClient().db.plants.update(
-      id,
+      newPlant.id,
       plantUpdate
     );
-    res.status(201).json(updatedPlant);
+    res.status(201).json({
+      status: 201,
+      plants: updatedPlant ? [updatedPlant] : [],
+      message: "Plant details have successfully been updated.",
+    });
     // } else {
     // res.status(404).send("Plant doesn't exist.");
     // }
     // TODO: create the plant if doesn't exist
   } catch (e) {
     res.status(500).json({
-      message: "Something went wrong",
-      error: e
+      status: 500,
+      error: {
+        message: "Something went wrong",
+        stack: JSON.stringify(e)
+      }
     });
   }
 });
@@ -173,7 +207,7 @@ plantsRouter.put("/plants/:id", async (req: Request, res: Response) => {
  */
 
 // DELETE plants/:id
-plantsRouter.delete("/plants/:id", async (req: Request, res: Response) => {
+plantsRouter.delete("/plants/:id", async (req: Request, res: Response<ApiResponsePlant | ApiError>) => {
   const id = req.params.id;
   try {
     // await PlantService.remove(id);
@@ -182,8 +216,11 @@ plantsRouter.delete("/plants/:id", async (req: Request, res: Response) => {
     res.sendStatus(204);
   } catch (e) {
     res.status(500).json({
-      message: "Something went wrong",
-      error: e
+      status: 500,
+      error: {
+        message: "Something went wrong",
+        stack: JSON.stringify(e)
+      }
     });
   }
 });

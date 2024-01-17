@@ -1,4 +1,5 @@
 export const sessionOpt = {
+    name: "session",
     secret: "superSecretKey",
     resave: false,
     saveUninitialized: false,

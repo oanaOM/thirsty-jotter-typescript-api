@@ -32,9 +32,9 @@ if (app.get('env') === 'production') {
 app.use(express.urlencoded({ extended: true })); // parse Request Object as strings or arrays
 app.use(express.json());
 
+app.use(helmet());
 app.use(session(sessionOpt))
 
-app.use(helmet());
 app.use(cors({ credentials: true, origin: 'http://localhost:4321' }));
 app.use(
     '/api-docs',
