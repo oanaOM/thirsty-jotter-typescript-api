@@ -136,6 +136,7 @@ authRouter.post("/login", express.urlencoded({ extended: false }), async (req: R
  *         description: Clears user session and redirects to sign-in page
  */
 authRouter.get("/logout", async (req: Request, res: Response, next) => {
+  // res.header("Access-Control-Allow-Origin", "")
   req.session.user = null;
   req.session.save(function (err) {
     if (err) next(err);
@@ -144,7 +145,7 @@ authRouter.get("/logout", async (req: Request, res: Response, next) => {
       if (err) next(err);
 
       console.info("--GET /logout - clearing the session")
-      res.clearCookie("connect.sid")
+      res.clearCookie("session")
       res.redirect("http://localhost:4321/sign-in");
     })
   })

@@ -1,6 +1,6 @@
 import express, { Response, Request } from "express";
 import { Users, getXataClient } from "../../xata";
-import { ApiError, ApiResponse } from "../../common/types";
+import { ApiError, ApiResponseUser } from "../../common/types";
 
 type ValidateUserRequest = {
   email: string,
@@ -18,33 +18,6 @@ export const userRouter = express.Router();
 /**
  * Controller Definitions
  */
-
-/**
- * @swagger
- * components:
- *  schemas:
- *     users:
- *      required: 
- *        - email  
- *      type: object
- *      properties:
- *          id:
- *              type: integer
- *              description: User id
- *          first_name:
- *              type: string
- *              description: User's first name
- *          last_name:
- *              type: string
- *              description: User's last name
- *          email:
- *              type: string
- *              description: User's email
- *          password:
- *              type: string
- *              description: User's password
- */
-
 
 /**
  * @swagger
@@ -69,7 +42,7 @@ export const userRouter = express.Router();
  *         description: Something went wrong
  */
 
-userRouter.post("/users/validate", async (req: Request<ValidateUserRequest>, res: Response<ApiResponse | ApiError>) => {
+userRouter.post("/users/validate", async (req: Request<ValidateUserRequest>, res: Response<ApiResponseUser | ApiError>) => {
 
   const payload = req.body;
 
@@ -157,7 +130,7 @@ userRouter.post("/users/validate", async (req: Request<ValidateUserRequest>, res
  *         description: Something went wrong
  */
 
-userRouter.post("/users/create", async (req: Request, res: Response<ApiResponse | ApiError>) => {
+userRouter.post("/users/create", async (req: Request, res: Response<ApiResponseUser | ApiError>) => {
   const payload = req.body;
   const { first_name, last_name, email, country, password } = payload;
 
@@ -190,7 +163,7 @@ userRouter.post("/users/create", async (req: Request, res: Response<ApiResponse 
             password
           };
 
-          console.log("--POST /user/create: Creating new user: ", newUser)
+          console.info("--POST /user/create: Creating new user: ", newUser)
 
           await getXataClient()
             .db.users.create(newUser)
