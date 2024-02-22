@@ -38,21 +38,20 @@ plantsRouter.use("/plants/:id", sessionMiddleware);
  */
 plantsRouter.get("/plants", async (req: Request, res: Response<ApiResponsePlant | ApiError>) => {
 
-  console.log("PLANTS: req cookies:", req.session)
-  const page = Number(req.query.page) || 1;
-  const size = Number(req.query.size) || 5;
-  const offset = size * page - size;
+  console.log("/plants session id: ", req.sessionID)
+  console.log("/plants: session used id:", req.session.user)
+  // const page = Number(req.query.page) || 1;
+  // const size = Number(req.query.size) || 5;
+  // const offset = size * page - size;
 
+  // TODO: implement pagination
   try {
     const plants = await getXataClient().db.plants
       .filter({ user_id: req.session.user })
-      .getPaginated({
-        pagination: { size, offset },
-      });
-
+      .getMany()      
     res.status(200).json({
       status: 200,
-      plants: plants.records,
+      plants: plants,
       message: "Successfully retrieve the list of plants."
     });
   } catch (e) {
@@ -86,8 +85,12 @@ plantsRouter.get("/plants", async (req: Request, res: Response<ApiResponsePlant 
 plantsRouter.get("/plants/:id", async (req: Request, res: Response<ApiResponsePlant | ApiError>) => {
   const id = req.params.id;
 
+  console.info("/plants/:id, id: ", id)
+  console.info("/plants/:id session id: ", req.sessionID)
+
   try {
-    const plant = await getXataClient().db.plants.read(id);
+    const plant = await getXataClient().db.plants.filter({ id }).getFirst();
+ 
 
     if (plant != null) {
       res.status(200).json({

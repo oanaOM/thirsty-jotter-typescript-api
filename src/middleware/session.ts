@@ -9,7 +9,7 @@ export const sessionMiddleware = async (
     /* eslint-enable @typescript-eslint/no-unused-vars */
 ) => {
 
-    console.info("Session middleware: request coming through with session", request.session)
+    console.info("session middleware: session id: ", request.sessionID)
     if (request.headers.cookie && request.headers.cookie?.length > 0 || request.session) {
         next()
     } else {
