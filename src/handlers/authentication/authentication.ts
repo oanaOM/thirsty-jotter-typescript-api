@@ -78,28 +78,26 @@ authRouter.post("/login", express.urlencoded({ extended: false }), async (req: R
     if (isValidHash) {
 
       req.session.regenerate(function (err) {
-        if (err) {
-          next(err)
-        }
-
-        req.session.user = existingUser.id;
-
+        if (err) return next(err)
+    
+        // store user information in session, typically a user id
+        req.session.user = existingUser.id
+    
+        // save the session before redirection to ensure page
+        // load does not happen before session is saved
         req.session.save(function (err) {
-          if (err) {
-            next(err)
-          }
-
+          if (err) return next(err)
           res.status(200).send({
-            status: 200,
-            user: {
-              id: existingUser.id,
-              email: existingUser.email,
-            },
-            auth: {
-              expiryDate: req.session.cookie.expires,
-            },
-            message: "Successfully authenticated",
-          });
+                status: 200,
+                user: {
+                  id: existingUser.id,
+                  email: existingUser.email,
+                },
+                auth: {
+                  expiryDate: req.session.cookie.expires,
+                },
+                message: "Successfully authenticated",
+              });
         })
       })
     } else {
